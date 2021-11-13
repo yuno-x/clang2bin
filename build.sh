@@ -17,7 +17,7 @@ function printhelp()
 
 function  printversion()
 {
-      echo -e "$0 ver.0.90"
+      echo -e "$0 ver.0.91"
       echo -e "Copyright (C) 2021 Masanori Yuno (github: yuno-x)."
       echo -e "This is free software: you are free to change and redistribute it."
       echo -e "There is NO WARRANTY, to the extent permitted by law."
@@ -33,11 +33,11 @@ function binbuild()
     OBJECT="${FNAME}.o"
     OBJECTS="${OBJECTS} ${OBJECT}"
 
-    gcc ${INFILE} -o ${OBJECT} -fno-freestanding -fno-common -fno-asynchronous-unwind-tables -fPIC -fPIE -fpack-struct -c
+    gcc ${INFILE} -o ${OBJECT} -fno-freestanding -fno-common -fno-builtin -fomit-frame-pointer -fno-exceptions -fno-stack-protector -fno-asynchronous-unwind-tables -fno-PIC -fno-PIE -fpack-struct -O0 -Wl,--oformat=binary -c
   done
 
   BINARY="`echo $1 | sed -e "s|\(.*\)\.[^.]*$|\1|g"`.img"
-  ld ${OBJECTS} -o ${BINARY} -nostdlib -Ttext=0x0 -e 0x00 --oformat binary -N
+  ld ${OBJECTS} -o ${BINARY} -nostdlib -Ttext=0x0 -e 0x00 --oformat binary -N --orphan-handling=discard
 }
 
 function binbuild32()
@@ -50,11 +50,11 @@ function binbuild32()
     OBJECT="${FNAME}.o"
     OBJECTS="${OBJECTS} ${OBJECT}"
 
-    gcc ${INFILE} -o ${OBJECT} -fno-freestanding -fno-common -fno-asynchronous-unwind-tables -fPIC -fPIE -fpack-struct -m32 -c
+    gcc ${INFILE} -o ${OBJECT} -fno-freestanding -fno-common -fno-builtin -fomit-frame-pointer -fno-exceptions -fno-stack-protector -fno-asynchronous-unwind-tables -fno-PIC -fno-PIE -fpack-struct -O0 -Wl,--oformat=binary -m32 -c #-fcf-protection=none
   done
 
   BINARY="`echo $1 | sed -e "s|\(.*\)\.[^.]*$|\1|g"`.img"
-  ld ${OBJECTS} -o ${BINARY} -nostdlib -Ttext=0x0 -e 0x00 --oformat binary -N -m elf_i386
+  ld ${OBJECTS} -o ${BINARY} -nostdlib -Ttext=0x0 -e 0x00 --oformat binary -N -m elf_i386 --orphan-handling=discard
 }
 
 function bindump()
